@@ -52,3 +52,24 @@ class CorpusDictionary:
         )
     
     
+    def truncate_dictionary(self, min_frequency=0.0, max_frequency=1.0):
+        self.dictionary = {
+            word: frequency
+            for word, frequency in self.dictionary.items()
+            if frequency / self.n_texts >= min_frequency
+                and frequency / self.n_texts <= max_frequency
+        }
+        self.word_to_idx, self.idx_to_word = self._create_indexers(self.unknown_symbol, self.pad_symbol)
+    
+    
+    def transform(self, texts):
+        tokenized_texts = list(map(tokenizer, texts))
+        
+        return [
+            [
+                self.word_to_idx.get(
+                    token,
+                    self.word_to_idx[self.unknown_symbol]
+                ) for token in tokens
+            ] for tokens in tokenized_texts
+        ]
