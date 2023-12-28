@@ -129,3 +129,72 @@ def sort_batch(X, y, lengths):
     X = X[indx]
     y = y[indx]
     return X.transpose(0, 1), y, lengths
+
+
+def fit(model, train_dl, test_dl, loss_fn, opt, epochs=3):
+    train_losses = []
+    test_losses = []
+    
+    for epoch in range(epochs):
+        model.train()
+        total_loss_train = 0
+        total_loss_test = 0
+        
+        for X, y, lengths in iter(train_dl):
+            X, y, lengths = sort_batch(X, y, lengths)
+            X = Variable(X)
+            y = Variable(y)
+            lengths = lengths.numpy()
+            
+            opt.zero_grad()
+            pred = model(X, lengths)
+            loss = loss_fn(pred, y)
+            loss.backward()
+            opt.step()
+            
+            total_loss_train += loss.item()
+
+        train_loss = total_loss_train / len(train_dl)
+        train_losses.append(train_loss)
+        
+        if epoch % 5 == 0:
+            model.eval()
+            for X, y, lengths in test_dl:
+                X, y, lengths = sort_batch(X, y, lengths)
+                X = Variable(X)
+                y = Variable(y)
+                pred = model(X, lengths.numpy())
+                loss = loss_fn(pred, y)
+                total_loss_test += loss.item()
+
+            test_loss = total_loss_test / len(test_dl)
+            test_losses.append(test_loss)
+
+        clear_output(wait=True)
+        
+        print("Train loss:\t{:.4f}\nVal loss:\t{:.4f}".format(train_loss, test_losses[-1]))
+        
+        plt.figure(figsize=(8, 4))
+        plt.plot(range(epoch + 1), train_losses, label='train', marker='o')
+        plt.plot(range(0, epoch + 1, 5), test_losses, label='test', marker='o')
+        plt.legend()
+        plt.title("Training loss")
+        plt.show()
+
+
+def predict(model, dl):
+    y_true_val, y_pred_val, y_pred_proba = [], [], []
+
+    model.eval()
+    for X, y, lengths in dl:
+        X, y, lengths = sort_batch(X, y, lengths)
+        X = Variable(X)
+        y = Variable(y)
+        pred = model(X, lengths.numpy())
+        prob = F.softmax(pred, dim=1)
+        pred_idx = torch.max(pred, 1)[1]
+        y_true_val += list(y.cpu().data.numpy())
+        y_pred_val += list(pred_idx.cpu().data.numpy())
+        y_pred_proba += list(prob.cpu().data.numpy())
+        
+    return np.asarray(y_true_val), np.asarray(y_pred_val), np.asarray(y_pred_proba)
