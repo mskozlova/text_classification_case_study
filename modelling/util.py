@@ -73,3 +73,52 @@ class CorpusDictionary:
                 ) for token in tokens
             ] for tokens in tokenized_texts
         ]
+
+
+class PaddedTextVectorDataset(Dataset):
+    def __init__(self, texts, target, corpus_dict=None, emb=None, max_vector_len=50):
+        self.max_vector_len = max_vector_len
+        vectors = self._get_vectors(texts, corpus_dict, emb)
+        self.lengths = list(map(
+            lambda x: len(x) if len(x) <= max_vector_len else max_vector_len,
+            vectors
+        ))
+        self.vectors = list(map(self.pad_data, vectors))
+        self.target = list(target)
+        
+        assert len(texts) == len(target), "Texts len != target len: {} != {}".format(len(texts), len(target))
+
+
+    def _get_vectors(self, texts, corpus_dict, emb):
+        if corpus_dict is not None:
+            assert emb is None, "Can't provide both corpus_dict and pretrained embeddings"
+            return corpus_dict.transform(texts)
+        
+        if emb is not None:
+            assert corpus_dict is None, "Can't provide both corpus_dict and pretrained embeddings"
+            tokenized_texts = list(map(tokenizer, texts))
+            
+            vectors = [[emb.stoi[token] for token in tokens if token in emb.stoi] for tokens in tokenized_texts]
+            return [vector if len(vector) > 0 else [0] for vector in vectors]
+
+        raise ValueError("Should provide one of: corpus_dict, pretrained embeddings")
+
+
+    def __len__(self):
+        return len(self.target)
+
+
+    def __getitem__(self, idx):
+        X = np.asarray(self.vectors[idx])
+        vector_len = np.asarray(self.lengths[idx])
+        y = np.asarray(self.target[idx]).astype(float)
+        return X, y, vector_len
+
+
+    def pad_data(self, s):
+        padded = np.zeros((self.max_vector_len,), dtype=np.int64)
+        if len(s) > self.max_vector_len:
+            padded[:] = s[:self.max_vector_len]
+        else:
+            padded[:len(s)] = s
+        return padded
