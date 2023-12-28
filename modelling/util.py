@@ -122,3 +122,10 @@ class PaddedTextVectorDataset(Dataset):
         else:
             padded[:len(s)] = s
         return padded
+
+
+def sort_batch(X, y, lengths):
+    lengths, indx = lengths.sort(dim=0, descending=True)
+    X = X[indx]
+    y = y[indx]
+    return X.transpose(0, 1), y, lengths
