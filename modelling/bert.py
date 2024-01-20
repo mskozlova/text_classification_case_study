@@ -34,3 +34,18 @@ def get_dataset(texts, target, max_vector_len=50):
     labels = torch.tensor(target).type(torch.float)
         
     return TensorDataset(input_ids, attention_masks, labels)
+
+
+class BERTModel(nn.Module):
+    def __init__(self, n_out=12):
+        super(BERTModel, self).__init__()
+        self.l1 = BertModel.from_pretrained('bert-base-uncased')
+        self.l2 = nn.Dropout(0.3)
+        self.l3 = nn.Linear(768, n_out)
+
+
+    def forward(self, ids, mask, token_type_ids):
+        output_1 = self.l1(ids, attention_mask = mask, token_type_ids = token_type_ids)
+        output_2 = self.l2(output_1.pooler_output)
+        output = self.l3(output_2)
+        return output
