@@ -121,3 +121,32 @@ def fit(model, train_dl, validation_dl, optimizer, scheduler, loss_fn, device, e
 
     print()
     print("Training complete!")
+
+
+def predict(model, dl, device):
+    model.eval()
+
+    predictions, true_labels = [], []
+
+    for batch in dl:
+        input_ids = batch[0].to(device)
+        input_mask = batch[1].to(device)
+        labels = batch[2].to(device)
+    
+        with torch.no_grad():
+            output = model(
+                ids=input_ids,
+                mask=input_mask,
+                token_type_ids=None
+            )
+
+        probs = F.softmax(output, dim=1).detach().cpu().numpy()
+        label_ids = labels.to('cpu').numpy()
+    
+        predictions.extend(list(probs))
+        true_labels.extend(list(label_ids))
+
+    predictions = np.asarray(predictions)
+    true_labels = np.asarray(true_labels)
+
+    return true_labels, predictions
