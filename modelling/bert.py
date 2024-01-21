@@ -49,3 +49,75 @@ class BERTModel(nn.Module):
         output_2 = self.l2(output_1.pooler_output)
         output = self.l3(output_2)
         return output
+
+
+def fit(model, train_dl, validation_dl, optimizer, scheduler, loss_fn, device, epochs=4):
+     
+    for epoch in range(0, epochs):
+        print("{}\tEpoch {} / {}\nTraining...".format(datetime.datetime.now(), epoch + 1, epochs))
+
+        total_train_loss = 0
+        model.train()
+
+        for step, batch in enumerate(train_dl):
+
+            if step % 40 == 0 and not step == 0:
+                print("{}\tstep {} / {} done".format(datetime.datetime.now(), step, len(train_dl)))
+
+            input_ids = batch[0].to(device)
+            input_mask = batch[1].to(device)
+            labels = batch[2].to(device)
+                    
+            model.zero_grad()     
+            
+            output = model(
+                ids=input_ids,
+                mask=input_mask,
+                token_type_ids=None
+            )
+
+            optimizer.zero_grad()
+            loss = loss_fn(output, labels)
+            
+            total_train_loss += loss.item()
+
+            loss.backward()
+
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
+            optimizer.step()
+            scheduler.step()
+
+        avg_train_loss = total_train_loss / len(train_dl)
+                
+        print("{}\tAverage training loss: {:.2f}".format(datetime.datetime.now(), avg_train_loss))
+            
+        print("")
+        print("{}\tValidating...".format(datetime.datetime.now()))
+
+        model.eval()
+
+        total_eval_loss = 0
+
+        for batch in validation_dl:
+            input_ids = batch[0].to(device)
+            input_mask = batch[1].to(device)
+            labels = batch[2].to(device)
+            
+            with torch.no_grad():
+                output = model(
+                    ids=input_ids,
+                    mask=input_mask,
+                    token_type_ids=None
+                )
+                
+            loss = loss_fn(output, labels)
+            total_eval_loss += loss.item()
+
+        avg_val_loss = total_eval_loss / len(validation_dl)
+        
+        print("{}\tAverage validation loss: {:.2f}".format(datetime.datetime.now(), avg_val_loss))
+        print()
+
+    print()
+    print("Training complete!")
