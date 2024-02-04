@@ -3,6 +3,12 @@
 
 This project aims to explore and implement text classification techniques on a real-world dataset. Text classification involves assigning predefined categories or labels to a given set of textual data. In this case study, we focus on applying text classification to a specific dataset to gain insights and build a predictive model.
 
+## How to see the notebook
+
+The notebook contains `plotly` charts which are not rendered in GitHub interface due to interactivity. While you can get an understanding of the case without them, the data visualisation is a big part of the study.
+
+Please use `nbviewer` to see the fully rendered notebook - [link](https://nbviewer.org/github/mskozlova/text_classification_case_study/blob/main/item_description_classifier.ipynb).
+
 ## Dataset
 
 For this case study we use [Zenodo E commerce text dataset](https://zenodo.org/records/3355823).
