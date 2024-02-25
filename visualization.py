@@ -76,7 +76,7 @@ def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
     return fig
 
 
-def show_lr_feature_importance(lr, class_idx, count_vectorizer):
+def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_hn_style=False):
     labels = list(map(lambda x: x[0], sorted(count_vectorizer.vocabulary_.items(), key=lambda x: x[1])))
     fi = lr.coef_[class_idx]
 
@@ -91,6 +91,9 @@ def show_lr_feature_importance(lr, class_idx, count_vectorizer):
         width=700,
         height=400
     )
+    if is_hn_style:
+        fig.update_traces(marker=dict(color=color_yellow))
+        style_background(fig)
     return fig
 
 
