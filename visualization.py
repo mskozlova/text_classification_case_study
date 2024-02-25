@@ -6,16 +6,18 @@ import plotly.graph_objects as go
 
 
 # Hackernoon themed colors
-color_soft_white = '#c1cad4'
-color_dark_background = '#131513'
-color_dark_green = '#013b00'
-color_bright_green = '#02bb00'
-color_yellow = '#f5ec43'
-color_brown_yellow = '#666105'
-color_light_green = '#88ff88'
-color_bright_pink = '#ed1a67'
+color_soft_white = "#c1cad4"
+color_font = "#f6f7f9"
+color_dark_background = "#222428"
+color_bright_green = "#02bb00"
+color_dark_green = "#013b00"
+color_yellow = "#f5ec43"
+color_brown_yellow = "#666105"
+color_light_green = "#88ff88"
+color_bright_pink = "#ed1a67"
+color_black = "#111111"
 
-color_sequence = [color_dark_green, color_bright_green, color_yellow, color_brown_yellow, color_light_green, color_bright_pink]
+color_sequence = [color_bright_green, color_yellow, color_bright_pink, color_light_green, color_brown_yellow, color_dark_green, color_black]
 
 
 def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
