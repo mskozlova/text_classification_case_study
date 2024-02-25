@@ -5,6 +5,19 @@ import plotly.figure_factory as ff
 import plotly.graph_objects as go
 
 
+# Hackernoon themed colors
+color_soft_white = '#c1cad4'
+color_dark_background = '#131513'
+color_dark_green = '#013b00'
+color_bright_green = '#02bb00'
+color_yellow = '#f5ec43'
+color_brown_yellow = '#666105'
+color_light_green = '#88ff88'
+color_bright_pink = '#ed1a67'
+
+color_sequence = [color_dark_green, color_bright_green, color_yellow, color_brown_yellow, color_light_green, color_bright_pink]
+
+
 def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
     values = confusion_matrix(y_true, y_pred, **kwargs)
 
