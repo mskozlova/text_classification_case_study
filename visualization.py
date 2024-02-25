@@ -20,6 +20,25 @@ color_black = "#111111"
 color_sequence = [color_bright_green, color_yellow, color_bright_pink, color_light_green, color_brown_yellow, color_dark_green, color_black]
 
 
+def get_style_kwargs(is_hakernoon):
+    if is_hakernoon:
+        return {"color_discrete_sequence": color_sequence}
+    return {}
+
+
+def style_background(fig):
+    fig.update_layout(
+        plot_bgcolor=color_dark_background,
+        paper_bgcolor=color_dark_background,
+        title_font_color=color_font,
+        title_x=0.5,
+        font_color=color_soft_white,
+    )
+
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+
+
 def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
     values = confusion_matrix(y_true, y_pred, **kwargs)
 
