@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import confusion_matrix
 
 import plotly.figure_factory as ff
-import plotly.graph_objects as go
+import plotly.express as px
 
 
 # Hackernoon themed colors
@@ -82,23 +82,34 @@ def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_hn_style=Fals
 
     features = sorted(zip(labels, fi), key=lambda x: x[1])[::-1]
 
-    fig = go.Figure([go.Bar(
+    fig = px.bar(
         x=list(map(lambda x: x[0], features)),
         y=list(map(lambda x: x[1], features))
-    )])
+    )
     fig.update_layout(
         title="Baseline feature importances for label {}".format(lr.classes_[class_idx]),
         width=700,
-        height=400
+        height=400,
+        xaxis_title=None,
+        yaxis_title=None,
     )
     if is_hn_style:
-        fig.update_traces(marker=dict(color=color_yellow))
+        fig.update_traces(marker=dict(color=color_yellow, line=dict(color=color_yellow, width=1)))
         style_background(fig)
     return fig
 
 
-def show_predicted_labels_distribution(pred_labels, method):
+def show_predicted_labels_distribution(pred_labels, method, is_hn_style=False):
     labels, counts = np.unique(pred_labels, return_counts=True)
-    fig = go.Figure([go.Bar(x=labels, y=counts)])
-    fig.update_layout(title="Predictions per tag {}".format(method), width=700, height=400)
+    fig = px.bar(x=labels, y=counts, text=[f"{c / sum(counts) * 100:.1f}%" for c in counts])
+    fig.update_layout(
+        title="Predictions Per Tag. Model: {}".format(method),
+        width=700,
+        height=400,
+        xaxis_title=None,
+        yaxis_title="# Tags",
+    )
+    if is_hn_style:
+        fig.update_traces(marker=dict(color=color_sequence, line=dict(color=color_sequence, width=1)))
+        style_background(fig)
     return fig
