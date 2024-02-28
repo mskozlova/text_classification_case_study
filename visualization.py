@@ -5,7 +5,7 @@ import plotly.figure_factory as ff
 import plotly.express as px
 
 
-# Hackernoon themed colors
+# Customs styling colors
 color_soft_white = "#c1cad4"
 color_font = "#f6f7f9"
 color_dark_background = "#222428"
@@ -18,6 +18,7 @@ color_bright_pink = "#ed1a67"
 color_black = "#111111"
 
 color_sequence = [color_bright_green, color_yellow, color_bright_pink, color_light_green, color_brown_yellow, color_dark_green, color_black]
+color_scale = [color_dark_green, color_bright_green, color_light_green, color_yellow]
 
 
 def get_style_kwargs(is_hakernoon):
@@ -39,7 +40,7 @@ def style_background(fig):
     fig.update_yaxes(showgrid=False)
 
 
-def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
+def draw_confusion_matrix(y_true, y_pred, classes_names, label, is_hn_style=False, **kwargs):
     values = confusion_matrix(y_true, y_pred, **kwargs)
 
     x_labels, y_labels = list(classes_names), list(classes_names)
@@ -49,7 +50,7 @@ def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
         values,
         x=x_labels, y=y_labels,
         annotation_text=values_text,
-        colorscale="temps"
+        colorscale=color_scale if is_hn_style else "temps"
     )
 
     fig.update_layout(title_text="Confusion matrix, {}".format(label))
@@ -73,6 +74,9 @@ def draw_confusion_matrix(y_true, y_pred, classes_names, label, **kwargs):
     fig.update_layout(margin={"t": 50, "l": 200})
 
     fig["data"][0]["showscale"] = True
+    
+    if is_hn_style:
+        style_background(fig)
     return fig
 
 
