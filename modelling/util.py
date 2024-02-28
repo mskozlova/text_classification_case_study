@@ -180,6 +180,8 @@ def fit(model, train_dl, test_dl, loss_fn, opt, epochs=3):
         plt.legend()
         plt.title("Training loss")
         plt.show()
+   
+    return train_losses, test_losses
 
 
 def predict(model, dl):
