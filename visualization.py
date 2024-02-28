@@ -92,7 +92,7 @@ def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_hn_style=Fals
     )
     fig.update_layout(
         title="Baseline feature importances for label {}".format(lr.classes_[class_idx]),
-        width=700,
+        width=1000,
         height=400,
         xaxis_title=None,
         yaxis_title=None,
