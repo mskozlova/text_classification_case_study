@@ -21,8 +21,8 @@ color_sequence = [color_bright_green, color_yellow, color_bright_pink, color_lig
 color_scale = [color_dark_green, color_bright_green, color_light_green, color_yellow]
 
 
-def get_style_kwargs(is_hakernoon):
-    if is_hakernoon:
+def get_style_kwargs(is_custom_style):
+    if is_custom_style:
         return {"color_discrete_sequence": color_sequence}
     return {}
 
@@ -40,7 +40,7 @@ def style_background(fig):
     fig.update_yaxes(showgrid=False)
 
 
-def draw_confusion_matrix(y_true, y_pred, classes_names, label, is_hn_style=False, **kwargs):
+def draw_confusion_matrix(y_true, y_pred, classes_names, label, is_custom_style=False, **kwargs):
     values = confusion_matrix(y_true, y_pred, **kwargs)
 
     x_labels, y_labels = list(classes_names), list(classes_names)
@@ -50,7 +50,7 @@ def draw_confusion_matrix(y_true, y_pred, classes_names, label, is_hn_style=Fals
         values,
         x=x_labels, y=y_labels,
         annotation_text=values_text,
-        colorscale=color_scale if is_hn_style else "temps"
+        colorscale=color_scale if is_custom_style else "temps"
     )
 
     fig.update_layout(title_text="Confusion matrix, {}".format(label))
@@ -75,12 +75,12 @@ def draw_confusion_matrix(y_true, y_pred, classes_names, label, is_hn_style=Fals
 
     fig["data"][0]["showscale"] = True
     
-    if is_hn_style:
+    if is_custom_style:
         style_background(fig)
     return fig
 
 
-def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_hn_style=False):
+def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_custom_style=False):
     labels = list(map(lambda x: x[0], sorted(count_vectorizer.vocabulary_.items(), key=lambda x: x[1])))
     fi = lr.coef_[class_idx]
 
@@ -97,13 +97,13 @@ def show_lr_feature_importance(lr, class_idx, count_vectorizer, is_hn_style=Fals
         xaxis_title=None,
         yaxis_title=None,
     )
-    if is_hn_style:
+    if is_custom_style:
         fig.update_traces(marker=dict(color=color_yellow, line=dict(color=color_yellow, width=1)))
         style_background(fig)
     return fig
 
 
-def show_predicted_labels_distribution(pred_labels, method, is_hn_style=False):
+def show_predicted_labels_distribution(pred_labels, method, is_custom_style=False):
     labels, counts = np.unique(pred_labels, return_counts=True)
     fig = px.bar(x=labels, y=counts, text=[f"{c / sum(counts) * 100:.1f}%" for c in counts])
     fig.update_layout(
@@ -113,7 +113,7 @@ def show_predicted_labels_distribution(pred_labels, method, is_hn_style=False):
         xaxis_title=None,
         yaxis_title="# Tags",
     )
-    if is_hn_style:
+    if is_custom_style:
         fig.update_traces(marker=dict(color=color_sequence, line=dict(color=color_sequence, width=1)))
         style_background(fig)
     return fig
